@@ -1,7 +1,10 @@
 import { Component, Directive, Input, Output, TemplateRef, ViewChild,
          ViewContainerRef, ContentChild, OnInit } from '@angular/core';
 import { EventEmitter } from '@angular/core';
-import { TemplatePortalDirective, TemplatePortal } from '@angular/material';
+import { TemplatePortalDirective, TemplatePortal } from '@angular/cdk/portal';
+import { coerceBooleanProperty } from '@angular/cdk/coercion';
+
+import { ICanDisable, mixinDisabled, ICanDisableRipple, mixinDisableRipple } from '../common/common.module';
 
 export enum StepState {
   None = <any>'none',
@@ -36,18 +39,23 @@ export class TdStepSummaryDirective extends TemplatePortalDirective {
   }
 }
 
+export class TdStepBase {}
+
+/* tslint:disable-next-line */
+export const _TdStepMixinBase = mixinDisableRipple(mixinDisabled(TdStepBase));
+
 @Component({
   selector: 'td-step',
+  inputs: ['disabled', 'disableRipple'],
   templateUrl: './step.component.html',
 })
-export class TdStepComponent implements OnInit {
+export class TdStepComponent extends _TdStepMixinBase implements OnInit, ICanDisable, ICanDisableRipple {
 
   private _active: boolean = false;
   private _state: StepState = StepState.None;
-  private _disabled: boolean = false;
 
-  private _contentPortal: TemplatePortal;
-  get stepContent(): TemplatePortal {
+  private _contentPortal: TemplatePortal<any>;
+  get stepContent(): TemplatePortal<any> {
     return this._contentPortal;
   }
 
@@ -75,27 +83,11 @@ export class TdStepComponent implements OnInit {
    */
   @Input('active')
   set active(active: boolean) {
-    this._setActive(active);
-  };
+    this._setActive(coerceBooleanProperty(active));
+  }
   get active(): boolean {
     return this._active;
-  };
-
-  /**
-   * disabled?: boolean
-   * Disables icon and header, blocks click event and sets [TdStepComponent] to deactive if 'true'.
-   */
-  @Input('disabled')
-  set disabled(disabled: boolean) {
-    if (disabled && this._active) {
-      this._active = false;
-      this._onDeactivated();
-    }
-    this._disabled = disabled;
-  };
-  get disabled(): boolean {
-    return this._disabled;
-  };
+  }
 
   /**
    * state?: StepState or ['none' | 'required' | 'complete']
@@ -115,7 +107,7 @@ export class TdStepComponent implements OnInit {
         this._state = StepState.None;
         break;
     }
-  };
+  }
   get state(): StepState {
     return this._state;
   }
@@ -132,7 +124,9 @@ export class TdStepComponent implements OnInit {
    */
   @Output('deactivated') onDeactivated: EventEmitter<void> = new EventEmitter<void>();
 
-  constructor(private _viewContainerRef: ViewContainerRef) {}
+  constructor(private _viewContainerRef: ViewContainerRef) {
+    super();
+  }
 
   ngOnInit(): void {
     this._contentPortal = new TemplatePortal(this._content, this._viewContainerRef);
@@ -167,7 +161,15 @@ export class TdStepComponent implements OnInit {
    */
   isComplete(): boolean {
     return this._state === StepState.Complete;
-  };
+  }
+
+  /** Method executed when the disabled value changes */
+  onDisabledChange(v: boolean): void {
+    if (v && this._active) {
+      this._active = false;
+      this._onDeactivated();
+    }
+  }
 
   /**
    * Method to change active state internally and emit the [onActivated] event if 'true' or [onDeactivated]
@@ -175,7 +177,7 @@ export class TdStepComponent implements OnInit {
    * returns true if successfully changed state
    */
   private _setActive(newActive: boolean): boolean {
-    if (this._disabled) {
+    if (this.disabled) {
       return false;
     }
     if (this._active !== newActive) {
@@ -188,13 +190,13 @@ export class TdStepComponent implements OnInit {
       return true;
     }
     return false;
-  };
+  }
 
   private _onActivated(): void {
     this.onActivated.emit(undefined);
-  };
+  }
 
   private _onDeactivated(): void {
     this.onDeactivated.emit(undefined);
-  };
+  }
 }

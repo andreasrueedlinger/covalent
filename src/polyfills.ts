@@ -12,6 +12,7 @@ import 'core-js/es6/date';
 import 'core-js/es6/array';
 import 'core-js/es6/regexp';
 import 'core-js/es6/map';
+import 'core-js/es6/weak-map';
 import 'core-js/es6/set';
 import 'core-js/es6/reflect';
 
@@ -35,4 +36,12 @@ import 'web-animations-js';
 
 // NgClass on SVG elements
 // Needed for: IE10, IE11
-// import 'classlist.js';
+import 'classlist.js';
+
+// Latest for IE11 support due to Angular animation changes 
+import 'core-js/es7/array';
+
+// Shim for undefined on IE11
+if (typeof SVGElement.prototype.contains === 'undefined') {
+    SVGElement.prototype.contains = HTMLDivElement.prototype.contains;
+}

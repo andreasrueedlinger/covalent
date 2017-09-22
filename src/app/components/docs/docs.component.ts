@@ -1,4 +1,4 @@
-import { Component, HostBinding, AfterViewInit } from '@angular/core';
+import { Component, HostBinding, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { TdMediaService } from '@covalent/core';
 
 import { fadeAnimation } from '../../app.animations';
@@ -25,10 +25,10 @@ export class DocsComponent implements AfterViewInit {
     route: 'angular',
     title: 'Angular',
   }, {
-    description: 'Material Design components for Angular',
+    description: 'Material Design components',
     icon: 'layers',
     route: 'angular-material',
-    title: 'Angular-Material',
+    title: 'Angular Material',
   }, {
     description: 'Angular CLI build tasks',
     icon: 'build',
@@ -66,11 +66,15 @@ export class DocsComponent implements AfterViewInit {
     title: 'Testing',
   }];
 
-  constructor(public media: TdMediaService) {}
+  constructor(private _changeDetectorRef: ChangeDetectorRef,
+              public media: TdMediaService) {}
 
   ngAfterViewInit(): void {
     // broadcast to all listener observables when loading the page
-    this.media.broadcast();
+    setTimeout(() => { // workaround since MdSidenav has issues redrawing at the beggining
+      this.media.broadcast();
+      this._changeDetectorRef.detectChanges();
+    });
   }
 
 }

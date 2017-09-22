@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnInit, Optional } from '@angular/core';
-import { Dir } from '@angular/material';
+import { coerceNumberProperty } from '@angular/cdk/coercion';
+import { Dir } from '@angular/cdk/bidi';
 
 export interface IPageChangeEvent {
   page: number;
@@ -17,25 +18,18 @@ export interface IPageChangeEvent {
 })
 export class TdPagingBarComponent implements OnInit {
 
-  private _pageSizes: number[] = [50, 100, 200, 500, 1000];
   private _pageSize: number = 50;
   private _total: number = 0;
   private _page: number = 1;
   private _fromRow: number = 1;
   private _toRow: number = 1;
   private _initialized: boolean = false;
-
-  /**
-   * pageSizeAll?: boolean
-   * Shows or hides the 'all' menu item in the page size menu. Defaults to 'false'
-   */
-  @Input('pageSizeAll') pageSizeAll: boolean = false;
-
-  /**
-   * pageSizeAllText?: string
-   * Text for the 'all' menu item in the page size menu. Defaults to 'All'
-   */
-  @Input('pageSizeAllText') pageSizeAllText: string = 'All';
+  private _pageLinks: number[] = [];
+  private _pageLinkCount: number = 0;
+  // special case when 2 pageLinks, detect when hit end of pages so can lead in correct direction
+  private _hitEnd: boolean = false;
+    // special case when 2 pageLinks, detect when hit start of pages so can lead in correct direction
+  private _hitStart: boolean = false;
 
   /**
    * firstLast?: boolean
@@ -50,33 +44,28 @@ export class TdPagingBarComponent implements OnInit {
   @Input('initialPage') initialPage: number = 1;
 
   /**
-   * pageSizes?: number[]
-   * Array that populates page size menu. Defaults to [50, 100, 200, 500, 1000]
+   * pageLinkCount?: number
+   * Amount of page navigation links for the paging bar. Defaults to '0'
    */
-  @Input('pageSizes')
-  set pageSizes(pageSizes: number[]) {
-    if (!(pageSizes instanceof Array)) {
-      throw new Error('[pageSizes] needs to be an number array.');
-    }
-    this._pageSizes = pageSizes;
-    this._pageSize = this._pageSizes[0];
+  @Input('pageLinkCount')
+  set pageLinkCount(pageLinkCount: number) {
+    this._pageLinkCount = coerceNumberProperty(pageLinkCount);
+    this._calculatePageLinks();
   }
-  get pageSizes(): number[] {
-    return this._pageSizes;
+  get pageLinkCount(): number {
+    return this._pageLinkCount;
   }
 
   /**
    * pageSize?: number
-   * Selected page size for the pagination. Defaults to first element of the [pageSizes] array.
+   * Selected page size for the pagination. Defaults 50.
    */
   @Input('pageSize')
   set pageSize(pageSize: number) {
-    if ((this._pageSizes.indexOf(pageSize) > -1 || this.total === pageSize) && this._pageSize !== pageSize) {
-      this._pageSize = pageSize;
-      this._page = 1;
-      if (this._initialized) {
-        this._handleOnChange();
-      }
+    this._pageSize = coerceNumberProperty(pageSize);
+    this._page = 1;
+    if (this._initialized) {
+      this._handleOnChange();
     }
   }
   get pageSize(): number {
@@ -89,11 +78,20 @@ export class TdPagingBarComponent implements OnInit {
    */
   @Input('total')
   set total(total: number) {
-    this._total = total;
+    this._total = coerceNumberProperty(total);
     this._calculateRows();
+    this._calculatePageLinks();
   }
   get total(): number {
     return this._total;
+  }
+
+  /**
+   * pageLinks: number[]
+   * Returns the pageLinks in an array
+   */
+  get pageLinks(): number[] {
+    return this._pageLinks;
   }
 
   /**
@@ -137,8 +135,9 @@ export class TdPagingBarComponent implements OnInit {
   constructor(@Optional() private _dir: Dir) {}
 
   ngOnInit(): void {
-    this._page = this.initialPage;
+    this._page = coerceNumberProperty(this.initialPage);
     this._calculateRows();
+    this._calculatePageLinks();
     this._initialized = true;
   }
 
@@ -148,7 +147,7 @@ export class TdPagingBarComponent implements OnInit {
    */
   navigateToPage(page: number): boolean {
     if (page === 1 || (page >= 1 && page <= this.maxPage)) {
-      this._page = page;
+      this._page = coerceNumberProperty(Math.floor(page));
       this._handleOnChange();
       return true;
     }
@@ -201,8 +200,54 @@ export class TdPagingBarComponent implements OnInit {
     this._toRow = this._total > top ? top : this._total;
   }
 
+  /**
+   * _calculatePageLinks?: function
+   * Calculates the page links that should be shown to the user based on the current state of the paginator
+   */
+  private _calculatePageLinks(): void {
+    // special case when 2 pageLinks, detect when hit end of pages so can lead in correct direction
+    if (this.isMaxPage()) {
+      this._hitEnd = true;
+      this._hitStart = false;
+    }
+    // special case when 2 pageLinks, detect when hit start of pages so can lead in correct direction
+    if (this.isMinPage()) {
+      this._hitEnd = false;
+      this._hitStart = true;
+    }
+    // If the pageLinkCount goes above max possible pages based on perpage setting then reset it to maxPage
+    let actualPageLinkCount: number = this.pageLinkCount;
+    if (this.pageLinkCount > this.maxPage) {
+      actualPageLinkCount = this.maxPage;
+    }
+    // reset the pageLinks array
+    this._pageLinks = [];
+    // fill in the array with the pageLinks based on the current selected page
+    let middlePageLinks: number = Math.floor(actualPageLinkCount / 2);
+    for (let x: number = 0; x < actualPageLinkCount; x++) {
+      // don't go past the maxPage in the pageLinks
+      // have to handle even and odd pageLinkCounts differently so can still lead to the next numbers
+      if ((actualPageLinkCount % 2 === 0 && (this.page + middlePageLinks > this.maxPage)) ||
+          (actualPageLinkCount % 2 !== 0 && (this.page + middlePageLinks >= this.maxPage))) {
+        this._pageLinks[x] = this.maxPage - (actualPageLinkCount - (x + 1));
+      // if the selected page is after the middle then set that page as middle and get the correct balance on left and right
+      // special handling when there are only 2 pageLinks to just drop to next if block so can lead to next numbers when moving to right
+      // when moving to the left then go into this block
+      } else if ((actualPageLinkCount > 2 || actualPageLinkCount <= 2 && this._hitEnd) && (this.page - middlePageLinks) > 0) {
+        this._pageLinks[x] = (this.page - middlePageLinks) + x;
+      // if the selected page is before the middle then set the pages based on the x index leading up to and after selected page
+      } else if ((this.page - middlePageLinks) <= 0) {
+        this._pageLinks[x] = x + 1;
+      // other wise just set the array in order starting from the selected page
+      } else {
+        this._pageLinks[x] = this.page + x;
+      }
+    }
+  }
+
   private _handleOnChange(): void {
     this._calculateRows();
+    this._calculatePageLinks();
     let event: IPageChangeEvent = {
       page: this._page,
       maxPage: this.maxPage,

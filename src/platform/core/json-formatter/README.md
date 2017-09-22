@@ -11,7 +11,7 @@ The tree is collapsable/expandable so you can navigate through its nodes.
 Properties:
 
 | Name | Type | Description |
-| --- | --- | --- |
+| --- | --- | 650--- |
 | `key?` | `string` | Tag to be displayed as root of formatted object.
 | `data` | `any` | JS object to be formatted.
 | `levelsOpen?` | `number` | Levels opened by default when JS object is formatted and rendered.
@@ -25,7 +25,7 @@ Import the [CovalentJsonFormatterModule] in your NgModule:
 import { CovalentJsonFormatterModule } from '@covalent/core';
 @NgModule({
   imports: [
-    CovalentJsonFormatterModule,  // or CovalentCoreModule (included inside of it)
+    CovalentJsonFormatterModule,
     ...
   ],
   ...

@@ -7,8 +7,9 @@
 Methods:
 
 | Name | Type | Description |
-| --- | --- | --- |
+| --- | --- | 650--- |
 | `content` | `string` | Markdown format content to be parsed as html markup. Used to load data dynamically. e.g. `README.md` content.
+| `contentReady` | `function` |  Event emitted after the markdown content rendering is finished.
 
 **Note:** This module uses the **DomSanitizer** service to ~sanitize~ the parsed `html` from the `showdown` lib to avoid **XSS** issues.
 

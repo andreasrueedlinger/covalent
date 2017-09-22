@@ -2,7 +2,10 @@ import { Type } from '@angular/core';
 import { NgModule, ModuleWithProviders } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
-import { MdIconModule, MdRippleModule, PortalModule } from '@angular/material';
+import { PortalModule } from '@angular/cdk/portal';
+import { ScrollDispatchModule } from '@angular/cdk/scrolling';
+
+import { MdIconModule, MdRippleModule } from '@angular/material';
 
 import { CovalentCommonModule } from '../common/common.module';
 
@@ -32,6 +35,7 @@ export { TdStepsComponent, IStepChangeEvent, StepMode } from './steps.component'
     MdIconModule,
     MdRippleModule,
     PortalModule,
+    ScrollDispatchModule,
     CovalentCommonModule,
   ],
   declarations: [
@@ -42,15 +46,5 @@ export { TdStepsComponent, IStepChangeEvent, StepMode } from './steps.component'
   ],
 })
 export class CovalentStepsModule {
-  /**
-   * @deprecated in 1.0.0-beta.3
-   *
-   * Please use without calling forRoot()
-   */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: CovalentStepsModule,
-      providers: [ ],
-    };
-  }
+
 }

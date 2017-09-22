@@ -1,5 +1,5 @@
-import { Component, HostBinding, AfterViewInit, ElementRef, Inject, Renderer2 } from '@angular/core';
-import { DOCUMENT } from '@angular/platform-browser';
+import { Component, HostBinding, ChangeDetectorRef, AfterViewInit } from '@angular/core';
+
 import { TdMediaService } from '@covalent/core';
 
 import { fadeAnimation } from '../../app.animations';
@@ -20,11 +20,6 @@ export class ComponentsComponent implements AfterViewInit {
     icon: 'picture_in_picture',
     route: '.',
     title: 'Components & Addons',
-  }, {
-    description: 'ng2 Material Design core components',
-    icon: 'change_history',
-    route: 'material-components',
-    title: 'Angular-Material Components',
   }, {
     description: 'A sequence of logical & numbered steps',
     icon: 'view_list',
@@ -66,6 +61,11 @@ export class ComponentsComponent implements AfterViewInit {
     route: 'data-table',
     title: 'Data Table',
   }, {
+    description: 'Scroll virtually on a set of items',
+    icon: 'format_line_spacing',
+    route: 'virtual-scroll',
+    title: 'Virtual Scroll',
+  }, {
     description: 'JSON object tree with collapsible nodes',
     icon: 'format_indent_increase',
     route: 'json-formatter',
@@ -80,6 +80,11 @@ export class ComponentsComponent implements AfterViewInit {
     icon: 'notifications',
     route: 'notifications',
     title: 'Notifications',
+  }, {
+    description: 'Info, warning & alert messages',
+    icon: 'info_outline',
+    route: 'message',
+    title: 'Messages & Alerts',
   }, {
     description: 'Search and filter items',
     icon: 'search',
@@ -100,6 +105,11 @@ export class ComponentsComponent implements AfterViewInit {
     icon: 'filter_list',
     route: 'pipes',
     title: 'Pipes',
+  }, {
+    description: 'Custom Angular animation utilities',
+    icon: 'theaters',
+    route: 'animations',
+    title: 'Animations',
   }];
 
   optional: Object[] = [{
@@ -111,12 +121,22 @@ export class ComponentsComponent implements AfterViewInit {
     description: 'Parse markdown code',
     icon: 'chrome_reader_mode',
     route: 'markdown',
-    title: 'Markdown',
+    title: 'Markdown Parser',
   }, {
     description: 'Build forms from a JS object',
     icon: 'format_align_center',
     route: 'dynamic-forms',
     title: 'Dynamic Forms',
+  }, {
+    description: 'Multi-languge code editor for Browser and Electron',
+    icon: 'featured_play_list',
+    route: 'code-editor',
+    title: 'Code Editor',
+  }, {
+    description: 'Text and Markdown editor component',
+    icon: 'keyboard',
+    route: 'text-editor',
+    title: 'Markdown Text Editor',
   }, {
     description: 'Http wrappers and helpers',
     icon: 'http',
@@ -125,27 +145,25 @@ export class ComponentsComponent implements AfterViewInit {
   }];
 
   external: Object[] = [{
-    description: 'Declarative D3 framework for ng2',
+    description: 'Declarative D3 framework',
     icon: 'insert_chart',
     route: 'ngx-charts',
     title: 'NGX-Charts',
   }, {
-    description: 'i18n library for ng2',
+    description: 'i18n library',
     icon: 'language',
     route: 'ngx-translate',
     title: 'NGX-Translate',
   }];
 
-  constructor(public media: TdMediaService,
-              private _renderer: Renderer2,
-              @Inject(DOCUMENT) private _document: any) {}
+  constructor(private _changeDetectorRef: ChangeDetectorRef,
+              public media: TdMediaService) {}
 
   ngAfterViewInit(): void {
     // broadcast to all listener observables when loading the page
-    this.media.broadcast();
-  }
-
-  changeDir(dir: string): void {
-    this._renderer.setAttribute(this._document.querySelector('html'), 'dir', dir);
+    setTimeout(() => { // workaround since MdSidenav has issues redrawing at the beggining
+      this.media.broadcast();
+      this._changeDetectorRef.detectChanges();
+    });
   }
 }

@@ -10,18 +10,22 @@ import { FileUploadDemoComponent } from './file-upload/file-upload.component';
 import { LoadingDemoComponent } from './loading/loading.component';
 import { MarkdownDemoComponent } from './markdown/markdown.component';
 import { MediaDemoComponent } from './media/media.component';
+import { MessageDemoComponent } from './message/message.component';
 import { HttpDemoComponent } from './http/http.component';
 import { JsonFormatterDemoComponent } from './json-formatter/json-formatter.component';
 import { ChipsDemoComponent } from './chips/chips.component';
 import { DialogsDemoComponent } from './dialogs/dialogs.component';
 import { DirectivesComponent } from './directives/directives.component';
 import { PipesComponent } from './pipes/pipes.component';
+import { AnimationsComponent } from './animations/animations.component';
 import { DataTableDemoComponent } from './data-table/data-table.component';
 import { PagingDemoComponent } from './paging/paging.component';
 import { SearchDemoComponent } from './search/search.component';
 import { DynamicFormsDemoComponent } from './dynamic-forms/dynamic-forms.component';
-import { MaterialComponentsComponent } from './material-components/material-components.component';
+import { CodeEditorDemoComponent } from './code-editor/code-editor.component';
+import { TextEditorDemoComponent } from './text-editor/text-editor.component';
 import { NotificationsDemoComponent } from './notifications/notifications.component';
+import { VirtualScrollDemoComponent } from './virtual-scroll/virtual-scroll.component';
 import { NgxChartsDemoComponent } from './ngx-charts/ngx-charts.component';
 import { NgxTranslateDemoComponent } from './ngx-translate/ngx-translate.component';
 
@@ -29,9 +33,6 @@ const routes: Routes = [{
   children: [{
       component: ComponentsOverviewComponent,
       path: '',
-    }, {
-      component: MaterialComponentsComponent,
-      path: 'material-components',
     }, {
       component: HighlightDemoComponent,
       path: 'syntax-highlighting',
@@ -57,6 +58,9 @@ const routes: Routes = [{
       component: MediaDemoComponent,
       path: 'media',
     }, {
+      component: MessageDemoComponent,
+      path: 'message',
+    }, {
       component: HttpDemoComponent,
       path: 'http',
     }, {
@@ -78,6 +82,9 @@ const routes: Routes = [{
       component: PipesComponent,
       path: 'pipes',
     }, {
+      component: AnimationsComponent,
+      path: 'animations',
+    }, {
       component: DataTableDemoComponent,
       path: 'data-table',
     }, {
@@ -87,8 +94,17 @@ const routes: Routes = [{
       component: NotificationsDemoComponent,
       path: 'notifications',
     }, {
+      component: VirtualScrollDemoComponent,
+      path: 'virtual-scroll',
+    }, {
       component: DynamicFormsDemoComponent,
       path: 'dynamic-forms',
+    }, {
+      component: CodeEditorDemoComponent,
+      path: 'code-editor',
+    }, {
+      component: TextEditorDemoComponent,
+      path: 'text-editor',
     }, {
       component: NgxChartsDemoComponent,
       path: 'ngx-charts',

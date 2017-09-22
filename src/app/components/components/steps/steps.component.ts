@@ -47,6 +47,10 @@ export class StepsDemoComponent implements OnInit, OnDestroy {
     name: 'state?',
     type: 'StepState or ["none" | "required" | "complete"]',
   }, {
+    description: ' Whether the ripple effect for this component is disabled',
+    name: 'disableRipple?',
+    type: 'boolean',
+  }, {
     description: 'Event emitted when [TdStepComponent] is activated.',
     name: 'activated?',
     type: 'function()',
@@ -73,7 +77,7 @@ export class StepsDemoComponent implements OnInit, OnDestroy {
 
   querySubscription: Subscription;
   mode: number = 0;
-  horizontal: boolean = true;
+  horizontal: boolean = false;
   isScreenGtSm: boolean = false;
   activeDeactiveStep1Msg: string = 'No select/deselect detected yet';
   stateStep2: StepState = StepState.Required;

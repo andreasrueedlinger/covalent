@@ -1,5 +1,4 @@
-import { Component, HostBinding, OnInit } from '@angular/core';
-
+import { Component, HostBinding, AfterViewInit } from '@angular/core';
 import { GitHubService } from '../../services';
 
 import { fadeAnimation } from '../../app.animations';
@@ -11,67 +10,77 @@ import { fadeAnimation } from '../../app.animations';
   animations: [fadeAnimation],
 })
 
-export class HomeComponent implements OnInit {
+export class HomeComponent implements AfterViewInit {
 
   @HostBinding('@routeAnimation') routeAnimation: boolean = true;
   @HostBinding('class.td-route-animation') classAnimation: boolean = true;
 
   starCount: number = 0;
 
-  items: Object[] = [{
-      color: 'purple-700',
+  sections: Object[] = [{
+      color: 'deep-purple-A400',
       description: 'Your guide to start using the UI platform in your app!',
       icon: 'library_books',
       route: 'docs',
       title: 'Documentation',
     }, {
-      color: 'blue-700',
-      description: 'Teradata brand logo usage, color palettes and more',
-      icon: 'color_lens',
-      route: 'style-guide',
-      title: 'Style Guide',
+      color: 'teal-A700',
+      description: 'Covalent Components, Directives, Pipes, & Services',
+      icon: 'picture_in_picture',
+      route: 'components',
+      title: 'Components',
     }, {
-      color: 'teal-700',
+      color: 'cyan-A700',
       description: 'Several different material design layout options for your apps',
       icon: 'view_quilt',
       route: 'layouts',
       title: 'Layouts',
     }, {
-      color: 'green-700',
-      description: 'Covalent Components, Directives, Pipes & Services',
-      icon: 'picture_in_picture',
-      route: 'components',
-      title: 'Components & Addons',
+      color: 'indigo-A400',
+      description: 'Teradata brand logo usage, color palettes and more',
+      icon: 'color_lens',
+      route: 'style-guide',
+      title: 'Style Guide',
+    }, {
+      color: 'yellow-800',
+      description: 'Solutions for commonly occuring problems',
+      icon: 'extension',
+      route: 'design-patterns',
+      title: 'Design Patterns',
+    }, {
+      color: 'green-A700',
+      description: 'Gallery of example applications and usages',
+      icon: 'view_carousel',
+      route: 'templates',
+      title: 'Templates',
     },
   ];
 
-  updates: Object[] = [{
-      description: 'Refactored Autocomplete Chips',
-      icon: 'label_outline',
-      route: 'components/chips',
-      title: 'Component updated',
+  repos: Object[] = [{
+      color: 'amber-A400',
+      description: 'A pre-built Angular 4 app using Covalent ready to go!',
+      icon: 'flash_on',
+      link: 'https://github.com/Teradata/covalent-quickstart',
+      title: 'Covalent Quickstart',
     }, {
-      description: 'Refactored Toggle Directives',
-      icon: 'wb_iridescent',
-      route: 'components/directives',
-      title: 'Directives updated',
+      color: 'orange-A400',
+      description: 'A native desktop hybrid starter app built on Electron.',
+      icon: 'laptop_mac',
+      link: 'https://github.com/Teradata/covalent-electron',
+      title: 'Covalent Electron',
     }, {
-      description: 'Refactored Stepper',
-      icon: 'view_list',
-      route: 'components/steps',
-      title: 'Stepper updated',
-    }, {
-      description: 'Refactored/Improved Expansion Panel',
-      icon: 'open_with',
-      route: 'components/expansion-panel',
-      title: 'Directives updated',
+      color: 'deep-orange-A400',
+      description: 'Mock API server for rapid prototyping and API standards.',
+      icon: 'aspect_ratio',
+      link: 'https://github.com/Teradata/covalent-data',
+      title: 'Covalent Data',
     },
   ];
 
   constructor(private _gitHubService: GitHubService) {
   }
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
     this._gitHubService.queryStartCount().subscribe((starsCount: number) => {
       this.starCount = starsCount;
     });

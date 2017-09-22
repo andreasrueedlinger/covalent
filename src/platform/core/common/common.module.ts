@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
  * ANIMATIONS
  */
 
+// Directives
 import { TdToggleDirective } from './animations/toggle/toggle.directive';
 import { TdFadeDirective } from './animations/fade/fade.directive';
 
@@ -15,10 +16,24 @@ const TD_ANIMATIONS: Type<any>[] = [
   TdToggleDirective,
   TdFadeDirective,
 ];
-
 export { TdToggleDirective, TdFadeDirective };
-export { TdCollapseAnimation } from './animations/collapse/collapse.animation';
-export { TdFadeInOutAnimation } from './animations/fade/fadeInOut.animation';
+
+// Utility functions
+export { TdRotateAnimation, IRotateAnimation } from './animations/rotate/rotate.animation';
+export { TdCollapseAnimation, ICollapseAnimation } from './animations/collapse/collapse.animation';
+export { TdFadeInOutAnimation, IFadeInOutAnimation } from './animations/fade/fadeInOut.animation';
+export { TdBounceAnimation } from './animations/bounce/bounce.animation';
+export { TdFlashAnimation } from './animations/flash/flash.animation';
+export { TdHeadshakeAnimation } from './animations/headshake/headshake.animation';
+export { TdJelloAnimation } from './animations/jello/jello.animation';
+export { TdPulseAnimation } from './animations/pulse/pulse.animation';
+
+/**
+ * BEHAVIORS
+ */
+
+export { ICanDisable, mixinDisabled } from './behaviors/disabled.mixin';
+export { ICanDisableRipple, mixinDisableRipple } from './behaviors/disable-ripple.mixin';
 
 /**
  * FORMS
@@ -34,15 +49,9 @@ const TD_FORMS: Type<any>[] = [
 export { TdAutoTrimDirective };
 
 // Validators
-import { TdMinValidator } from './forms/validators/min/min.validator';
-import { TdMaxValidator } from './forms/validators/max/max.validator';
-
 const TD_VALIDATORS: Type<any>[] = [
-  TdMinValidator,
-  TdMaxValidator,
 ];
 
-export { TdMinValidator, TdMaxValidator };
 export { CovalentValidators } from './forms/validators/validators';
 
 /**
@@ -53,7 +62,6 @@ import { TdTimeDifferencePipe } from './pipes/time-difference/time-difference.pi
 import { TdBytesPipe } from './pipes/bytes/bytes.pipe';
 import { TdDigitsPipe } from './pipes/digits/digits.pipe';
 import { TdTruncatePipe } from './pipes/truncate/truncate.pipe';
-import { RouterPathService } from './services/router.path.service';
 
 const TD_PIPES: Type<any>[] = [
   TdTimeAgoPipe,
@@ -65,6 +73,13 @@ const TD_PIPES: Type<any>[] = [
 
 export { TdTimeAgoPipe, TdTimeDifferencePipe,
          TdBytesPipe, TdDigitsPipe, TdTruncatePipe };
+
+/**
+ * Services
+ */
+
+import { RouterPathService } from './services/router-path.service';
+import { IconService } from './services/icon.service';
 
 @NgModule({
   imports: [
@@ -87,18 +102,9 @@ export { TdTimeAgoPipe, TdTimeDifferencePipe,
   ],
   providers: [
     RouterPathService,
+    IconService,
   ],
 })
 export class CovalentCommonModule {
-  /**
-   * @deprecated in 1.0.0-beta.3
-   *
-   * Please use without calling forRoot()
-   */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: CovalentCommonModule,
-      providers: [ ],
-    };
-  }
+
 }
